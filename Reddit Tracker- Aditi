@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Engagement Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active {
+            background: white;
+            border-bottom: 3px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .nav-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .phase-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ff6b6b;
+        }
+        
+        .phase-title {
+            color: #ff6b6b;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .phase-icon {
+            margin-right: 10px;
+            font-size: 1.6rem;
+        }
+        
+        .objectives {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .objective {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #4ecdc4;
+        }
+        
+        .tracker-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .progress-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4ecdc4;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .karma-badge {
+            background: linear-gradient(135deg, #ffd93d, #ff6b6b);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .quality-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .indicator {
+            padding: 15px;
+            background: #e8f5e8;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .danger {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #ff6b6b;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff6b6b;
+        }
+        
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+            }
+            
+            .objectives {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Reddit Engagement Strategy</h1>
+            <p>Strategic 30-Day Plan to Reach 1K Karma</p>
+        </div>
+        
+        <nav class="nav">
+            <button class="nav-btn active" onclick="showSection('strategy', event)">📋 Strategy Plan</button>
+            <button class="nav-btn" onclick="showSection('tracker', event)">📊 Daily Tracker</button>
+            <button class="nav-btn" onclick="showSection('progress', event)">📈 Team Progress</button>
+            <button class="nav-btn" onclick="showSection('quality', event)">⭐ Quality Metrics</button>
+
+        </nav>
+        
+        <div class="content">
+            <!-- Strategy Section -->
+            <div id="strategy" class="section active">
+                <h2 style="margin-bottom: 30px; color: #333;">📈 30-Day Reddit Engagement Strategy</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="phase-title">
+                            <span class="phase-icon">👀</span>
+                            Phase 1: Observation & Learning (Days 1-2)
+                        </div>
+                        <div class="objectives">
+                            <div class="objective">
+                                <strong>Daily Time:</strong> 30-60 minutes
+                                <br><strong>Activity:</strong> Lurk and observe subreddit dynamics
+                            </div>
+                            <div class="objective">
+                                <strong>Research:</strong> Identify 3-5 niche-relevant subreddits
+                                <br><strong>Goal:</strong> Understand community rules and culture
+                            </div>
+                        </div>
+                        <p><strong>Key Actions:</strong> Read top posts, study comment patterns, note posting times, understand what gets upvoted</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="phase-title">
+                            <span class="phase-icon">🤝</span>
+                            Phase 2: Community Integration (Days 3-7)
+                        </div>
+                        <div class="objectives">
+                            <div class="objective">
+                                <strong>Daily Time:</strong> 2-3 hours
+                                <br><strong>Activity:</strong> Join subreddits and start commenting
+                            </div>
+                            <div class="objective">
+                                <strong>Target:</strong> 5-10 quality comments per day
+                                <br><strong>Focus:</strong> Helpful, relevant contributions
+                            </div>
+                        </div>
+                        <p><strong>Quality Over Quantity:</strong> Focus on thoughtful responses that add value to discussions</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="phase-title">
+                            <span class="phase-icon">🚀</span>
+                            Phase 3: Active Engagement (Days 8-21)
+                        </div>
+                        <div class="objectives">
+                            <div class="objective">
+                                <strong>Daily Time:</strong> 3-4 hours
+                                <br><strong>Activity:</strong> Increased commenting + occasional posts
+                            </div>
+                            <div class="objective">
+                                <strong>Target:</strong> 15-20 comments + 1-2 posts per day
+                                <br><strong>Strategy:</strong> Mix of help, humor, and insights
+                            </div>
+                        </div>
+                        <p><strong>Karma Building:</strong> Aim for 20-40 karma per day through consistent quality engagement</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="phase-title">
+                            <span class="phase-icon">🎯</span>
+                            Phase 4: Optimization & Sprint (Days 22-30)
+                        </div>
+                        <div class="objectives">
+                            <div class="objective">
+                                <strong>Daily Time:</strong> 4-5 hours
+                                <br><strong>Activity:</strong> Strategic posting and commenting
+                            </div>
+                            <div class="objective">
+                                <strong>Target:</strong> 50+ karma per day
+                                <br><strong>Focus:</strong> Trending topics and prime time engagement
+                            </div>
+                        </div>
+                        <p><strong>Final Push:</strong> Leverage learned patterns for maximum karma gain</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tracker Section -->
+            <div id="tracker" class="section">
+                <h2 style="margin-bottom: 30px; color: #333;">📊 Daily Activity Tracker</h2>
+                
+                <div class="tracker-form">
+                    <h3 style="margin-bottom: 20px; color: #ff6b6b;">Log Daily Activity</h3>
+                    <form id="activityForm">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                            <div class="form-group">
+                                <label>Team Member</label>
+                                <select id="teamMember" required>
+                                    <option value="">Select Member</option>
+                                    <option value="member1">Team Member 1</option>
+                                    <option value="member2">Team Member 2</option>
+                                    <option value="member3">Team Member 3</option>
+                                    <option value="member4">Team Member 4</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="activityDate" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Time Spent (minutes)</label>
+                                <input type="number" id="timeSpent" min="0" max="600" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Subreddits Visited</label>
+                                <input type="number" id="subredditsVisited" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                            <div class="form-group">
+                                <label>Comments Made</label>
+                                <input type="number" id="commentsMade" min="0" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Posts Created</label>
+                                <input type="number" id="postsCreated" min="0" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Karma Gained</label>
+                                <input type="number" id="karmaGained" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Current Total Karma</label>
+                                <input type="number" id="totalKarma" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Quality Indicators (Check all that apply)</label>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
+                                <label><input type="checkbox" id="meaningfulComments"> Meaningful Comments</label>
+                                <label><input type="checkbox" id="helpfulResponses"> Helpful Responses</label>
+                                <label><input type="checkbox" id="originalContent"> Original Content</label>
+                                <label><input type="checkbox" id="communityRules"> Followed Community Rules</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Notes/Observations</label>
+                            <textarea id="notes" rows="3" placeholder="Any challenges, successful strategies, or observations..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn">📝 Log Activity</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Progress Section -->
+            <div id="progress" class="section">
+                <h2 style="margin-bottom: 30px; color: #333;">📈 Team Progress Dashboard</h2>
+                
+                <div id="progressContainer">
+                    <!-- Progress cards will be dynamically generated here -->
+                </div>
+            </div>
+            
+            <!-- Quality Metrics Section -->
+            <div id="quality" class="section">
+                <h2 style="margin-bottom: 30px; color: #333;">⭐ Quality Assessment Framework</h2>
+                
+                <div class="phase-card">
+                    <div class="phase-title">
+                        <span class="phase-icon">🎯</span>
+                        High-Quality Comment Indicators
+                    </div>
+                    <div class="quality-indicators">
+                        <div class="indicator">
+                            <strong>Length & Depth</strong>
+                            <p>2-3+ sentences with specific examples or explanations</p>
+                        </div>
+                        <div class="indicator">
+                            <strong>Relevance</strong>
+                            <p>Directly addresses the post/question with valuable insights</p>
+                        </div>
+                        <div class="indicator">
+                            <strong>Timing</strong>
+                            <p>Comments within first 2-4 hours of post publication</p>
+                        </div>
+                        <div class="indicator">
+                            <strong>Uniqueness</strong>
+                            <p>Adds new perspective, not repeating existing comments</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="phase-card">
+                    <div class="phase-title">
+                        <span class="phase-icon">🚨</span>
+                        Red Flags to Avoid
+                    </div>
+                    <div class="quality-indicators">
+                        <div class="indicator warning">
+                            <strong>Generic Responses</strong>
+                            <p>"Thanks for sharing" or "Great post" without substance</p>
+                        </div>
+                        <div class="indicator warning">
+                            <strong>Rapid-Fire Comments</strong>
+                            <p>Multiple comments within minutes without reading context</p>
+                        </div>
+                        <div class="indicator danger">
+                            <strong>Copy-Paste Content</strong>
+                            <p>Identical or near-identical comments across different posts</p>
+                        </div>
+                        <div class="indicator danger">
+                            <strong>Rule Violations</strong>
+                            <p>Self-promotion, off-topic, or community guideline breaches</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="phase-card">
+                    <div class="phase-title">
+                        <span class="phase-icon">📊</span>
+                        Weekly Quality Metrics
+                    </div>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value" id="avgKarmaPerComment">0</div>
+                            <div class="metric-label">Avg Karma/Comment</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="engagementRate">0%</div>
+                            <div class="metric-label">Engagement Rate</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="qualityScore">0</div>
+                            <div class="metric-label">Quality Score</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="consistencyScore">0%</div>
+                            <div class="metric-label">Consistency</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global data storage
+        let teamData = {
+            member1: { name: 'Ajay', activities: [], totalKarma: 0 },
+            member2: { name: 'Aditi', activities: [], totalKarma: 0 },
+            member3: { name: 'Shweta', activities: [], totalKarma: 0 },
+            member4: { name: '4th Guy/Gal', activities: [], totalKarma: 0 }
+        };
+
+        // Add unique id for each activity entry to help identify it during edit
+        const formData = {
+            id: new Date().toISOString(),  // Generate unique ID using timestamp
+            member: document.getElementById('teamMember').value,
+            date: document.getElementById('activityDate').value,
+            timeSpent: parseInt(document.getElementById('timeSpent').value),
+            subredditsVisited: parseInt(document.getElementById('subredditsVisited').value),
+            commentsMade: parseInt(document.getElementById('commentsMade').value),
+            postsCreated: parseInt(document.getElementById('postsCreated').value),
+            karmaGained: parseInt(document.getElementById('karmaGained').value),
+            totalKarma: parseInt(document.getElementById('totalKarma').value),
+            meaningfulComments: document.getElementById('meaningfulComments').checked,
+            helpfulResponses: document.getElementById('helpfulResponses').checked,
+            originalContent: document.getElementById('originalContent').checked,
+            communityRules: document.getElementById('communityRules').checked,
+            notes: document.getElementById('notes').value
+        };
+
+        
+        // Retrieve team data from local storage if available
+        const storedData = localStorage.getItem('teamData');
+        if (storedData) {
+            teamData = JSON.parse(storedData);
+            updateProgressDisplay();
+            updateQualityMetrics();
+        }
+
+        // Navigation functionality
+        function showSection(sectionId, event) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked nav button
+            event.target.classList.add('active');
+            
+            // Update progress display if progress section is shown
+            if (sectionId === 'progress') {
+                updateProgressDisplay();
+            }
+        }
+        
+        // Form submission
+        document.getElementById('activityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Save to local storage (for persistence)
+            localStorage.setItem('teamData', JSON.stringify(teamData));
+
+            const formData = {
+                member: document.getElementById('teamMember').value,
+                date: document.getElementById('activityDate').value,
+                timeSpent: parseInt(document.getElementById('timeSpent').value),
+                subredditsVisited: parseInt(document.getElementById('subredditsVisited').value),
+                commentsMade: parseInt(document.getElementById('commentsMade').value),
+                postsCreated: parseInt(document.getElementById('postsCreated').value),
+                karmaGained: parseInt(document.getElementById('karmaGained').value),
+                totalKarma: parseInt(document.getElementById('totalKarma').value),
+                meaningfulComments: document.getElementById('meaningfulComments').checked,
+                helpfulResponses: document.getElementById('helpfulResponses').checked,
+                originalContent: document.getElementById('originalContent').checked,
+                communityRules: document.getElementById('communityRules').checked,
+                notes: document.getElementById('notes').value
+            };
+            
+            // Add to team data
+            teamData[formData.member].activities.push(formData);
+            teamData[formData.member].totalKarma = formData.totalKarma;
+            
+            // Reset form
+            this.reset();
+            
+            // Show success message
+            alert('Activity logged successfully!');
+            
+            // Update quality metrics
+            updateQualityMetrics();
+        });
+        
+        // Update progress display
+        function updateProgressDisplay() {
+            const container = document.getElementById('progressContainer');
+            container.innerHTML = '';
+            
+            Object.keys(teamData).forEach(memberId => {
+                const member = teamData[memberId];
+                const recentActivities = member.activities.slice(-7); // Last 7 activities
+                
+                const avgTimeSpent = recentActivities.length > 0 
+                    ? Math.round(recentActivities.reduce((sum, act) => sum + act.timeSpent, 0) / recentActivities.length)
+                    : 0;
+                
+                const totalComments = recentActivities.reduce((sum, act) => sum + act.commentsMade, 0);
+                const totalPosts = recentActivities.reduce((sum, act) => sum + act.postsCreated, 0);
+                
+                const progressCard = document.createElement('div');
+                progressCard.className = 'progress-card';
+                progressCard.innerHTML = `
+                    <div class="progress-header">
+                        <h3>${member.name}</h3>
+                        <div class="karma-badge">${member.totalKarma} Karma</div>
+                    </div>
+                    
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value">${avgTimeSpent}</div>
+                            <div class="metric-label">Avg Minutes/Day</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${totalComments}</div>
+                            <div class="metric-label">Comments (7 days)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${totalPosts}</div>
+                            <div class="metric-label">Posts (7 days)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${recentActivities.length}</div>
+                            <div class="metric-label">Active Days</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <strong>Progress to 1K Karma:</strong>
+                        <div style="background: #e9ecef; border-radius: 10px; height: 20px; overflow: hidden; margin-top: 5px;">
+                            <div style="background: linear-gradient(135deg, #4ecdc4, #44a08d); height: 100%; width: ${Math.min((member.totalKarma / 1000) * 100, 100)}%; transition: width 0.5s ease;"></div>
+                        </div>
+                        <small>${Math.min(Math.round((member.totalKarma / 1000) * 100), 100)}% Complete</small>
+                    </div>
+                `;
+                
+                container.appendChild(progressCard);
+            });
+
+            // Inside updateProgressDisplay function
+            const progressCard = document.createElement('div');
+            progressCard.className = 'progress-card';
+            progressCard.innerHTML = `
+                <div class="progress-header">
+                    <h3>${member.name}</h3>
+                    <div class="karma-badge">${member.totalKarma} Karma</div>
+                </div>
+                <div class="metrics">
+                    <!-- metrics content here -->
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn" onclick="editActivity('${memberId}', '${activity.id}')">✏️ Edit</button>
+                </div>
+            `;
+
+            container.appendChild(progressCard);
+
+            // Add the editActivity function
+            function editActivity(memberId, activityId) {
+                const activity = teamData[memberId].activities.find(act => act.id === activityId);
+                
+                // Populate the form with the activity data
+                document.getElementById('teamMember').value = memberId;
+                document.getElementById('activityDate').value = activity.date;
+                document.getElementById('timeSpent').value = activity.timeSpent;
+                document.getElementById('subredditsVisited').value = activity.subredditsVisited;
+                document.getElementById('commentsMade').value = activity.commentsMade;
+                document.getElementById('postsCreated').value = activity.postsCreated;
+                document.getElementById('karmaGained').value = activity.karmaGained;
+                document.getElementById('totalKarma').value = activity.totalKarma;
+                document.getElementById('meaningfulComments').checked = activity.meaningfulComments;
+                document.getElementById('helpfulResponses').checked = activity.helpfulResponses;
+                document.getElementById('originalContent').checked = activity.originalContent;
+                document.getElementById('communityRules').checked = activity.communityRules;
+                document.getElementById('notes').value = activity.notes;
+                
+                // Change the button to update
+                const submitButton = document.querySelector('.btn');
+                submitButton.textContent = '🔄 Update Activity';
+                submitButton.onclick = function(e) {
+                    e.preventDefault();
+                    updateActivity(memberId, activityId);
+                };
+            }
+
+            // Add the function to update an activity
+            function updateActivity(memberId, activityId) {
+                const formData = {
+                    member: document.getElementById('teamMember').value,
+                    date: document.getElementById('activityDate').value,
+                    timeSpent: parseInt(document.getElementById('timeSpent').value),
+                    subredditsVisited: parseInt(document.getElementById('subredditsVisited').value),
+                    commentsMade: parseInt(document.getElementById('commentsMade').value),
+                    postsCreated: parseInt(document.getElementById('postsCreated').value),
+                    karmaGained: parseInt(document.getElementById('karmaGained').value),
+                    totalKarma: parseInt(document.getElementById('totalKarma').value),
+                    meaningfulComments: document.getElementById('meaningfulComments').checked,
+                    helpfulResponses: document.getElementById('helpfulResponses').checked,
+                    originalContent: document.getElementById('originalContent').checked,
+                    communityRules: document.getElementById('communityRules').checked,
+                    notes: document.getElementById('notes').value
+                };
+
+                // Find the activity and update it
+                const activityIndex = teamData[memberId].activities.findIndex(act => act.id === activityId);
+                teamData[memberId].activities[activityIndex] = formData;
+
+                // Reset form
+                document.querySelector('.btn').textContent = '📝 Log Activity';
+                this.reset();
+                alert('Activity updated successfully!');
+                localStorage.setItem('teamData', JSON.stringify(teamData));  // Save updated data
+                updateProgressDisplay();
+                updateQualityMetrics();
+            }
+
+        }
+        
+        // Update quality metrics
+        function updateQualityMetrics() {
+            const allActivities = Object.values(teamData).flatMap(member => member.activities);
+            
+            if (allActivities.length > 0) {
+                const totalComments = allActivities.reduce((sum, act) => sum + act.commentsMade, 0);
+                const totalKarma = allActivities.reduce((sum, act) => sum + act.karmaGained, 0);
+                const avgKarmaPerComment = totalComments > 0 ? (totalKarma / totalComments).toFixed(1) : 0;
+                
+                const qualityActivities = allActivities.filter(act => 
+                    act.meaningfulComments && act.helpfulResponses && act.communityRules
+                );
+                const qualityScore = allActivities.length > 0 
+                    ? Math.round((qualityActivities.length / allActivities.length) * 100)
+                    : 0;
+                
+                document.getElementById('avgKarmaPerComment').textContent = avgKarmaPerComment;
+                document.getElementById('engagementRate').textContent = '85%'; // Placeholder
+                document.getElementById('qualityScore').textContent = qualityScore;
+                document.getElementById('consistencyScore').textContent = '92%'; // Placeholder
+            }
+        }
+        
+        // Set today's date as default
+        document.getElementById('activityDate').value = new Date().toISOString().split('T')[0];
+        
+        // Initialize progress display
+        updateProgressDisplay();
+    </script>
+</body>
+</html>
