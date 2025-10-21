@@ -499,6 +499,35 @@
             padding: 8px 16px;
             font-size: 14px;
         }
+        
+        /* Dark Mode Toggle Button */
+        #theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4ecdc4;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        #theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+        }
+        
+        /* Make header position relative for absolute positioning of toggle */
+        .header {
+            position: relative;
+        }
     </style>
 </head>
 <body>
