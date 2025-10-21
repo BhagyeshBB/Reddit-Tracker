@@ -906,9 +906,49 @@
             });
         }
 
-        function addTeamMember() {
-            const name = prompt('Enter new team member name:');
-            if (name && name.trim()) {
+        let memberFormMode = 'add'; // 'add' or 'edit'
+        let editingMemberId = null;
+
+        function showMemberForm(mode, memberId = null) {
+            const form = document.getElementById('inlineMemberForm');
+            const nameInput = document.getElementById('memberNameInput');
+            const karmaInput = document.getElementById('memberKarmaInput');
+            
+            memberFormMode = mode;
+            editingMemberId = memberId;
+            
+            if (mode === 'edit' && memberId) {
+                nameInput.value = teamData[memberId].name;
+                karmaInput.value = teamData[memberId].totalKarma;
+            } else {
+                nameInput.value = '';
+                karmaInput.value = '0';
+            }
+            
+            form.classList.add('active');
+            nameInput.focus();
+        }
+
+        function hideMemberForm() {
+            const form = document.getElementById('inlineMemberForm');
+            form.classList.remove('active');
+            document.getElementById('memberNameInput').value = '';
+            document.getElementById('memberKarmaInput').value = '0';
+            editingMemberId = null;
+        }
+
+        function saveMember() {
+            const nameInput = document.getElementById('memberNameInput');
+            const karmaInput = document.getElementById('memberKarmaInput');
+            const name = nameInput.value.trim();
+            const karma = parseInt(karmaInput.value) || 0;
+            
+            if (!name || name.length < 2 || name.length > 100) {
+                showToast('Please enter a valid name (2-100 characters)', 'error', 4000);
+                return;
+            }
+            
+            if (memberFormMode === 'add') {
                 // Generate unique member id
                 let idx = 1;
                 let newId;
@@ -916,36 +956,54 @@
                     newId = `member${Object.keys(teamData).length + idx}`;
                     idx++;
                 } while (teamData[newId]);
-                teamData[newId] = { name, activities: [], totalKarma: 0 };
+                
+                teamData[newId] = { name, activities: [], totalKarma: karma };
                 localStorage.setItem('teamData', JSON.stringify(teamData));
                 updateTeamMemberDropdown();
                 document.getElementById('teamMember').value = newId;
                 updateProgressDisplay();
+                showToast('Team member added successfully!', 'success', 3000);
+            } else if (memberFormMode === 'edit' && editingMemberId) {
+                teamData[editingMemberId].name = name;
+                teamData[editingMemberId].totalKarma = karma;
+                localStorage.setItem('teamData', JSON.stringify(teamData));
+                updateTeamMemberDropdown();
+                document.getElementById('teamMember').value = editingMemberId;
+                updateProgressDisplay();
+                showToast('Team member updated successfully!', 'success', 3000);
             }
+            
+            hideMemberForm();
+        }
+
+        function addTeamMember() {
+            showMemberForm('add');
         }
 
         function editTeamMember() {
             const select = document.getElementById('teamMember');
             const memberId = select.value;
             if (!memberId) {
-                alert('Select a member to edit.');
+                showToast('Select a member to edit', 'error', 4000);
                 return;
             }
-            const currentName = teamData[memberId].name;
-            const newName = prompt('Edit team member name:', currentName);
-            if (newName && newName.trim()) {
-                teamData[memberId].name = newName.trim();
-                localStorage.setItem('teamData', JSON.stringify(teamData));
-                updateTeamMemberDropdown();
-                select.value = memberId;
-                updateProgressDisplay();
-            }
+            showMemberForm('edit', memberId);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             updateTeamMemberDropdown();
             document.getElementById('addMemberBtn').onclick = addTeamMember;
             document.getElementById('editMemberBtn').onclick = editTeamMember;
+            document.getElementById('saveMemberBtn').onclick = saveMember;
+            document.getElementById('cancelMemberBtn').onclick = hideMemberForm;
+            
+            // Allow Enter key to save in member form
+            document.getElementById('memberNameInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') saveMember();
+            });
+            document.getElementById('memberKarmaInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') saveMember();
+            });
         });
 
         // Retrieve team data from local storage if available
