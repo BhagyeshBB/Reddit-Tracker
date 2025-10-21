@@ -710,6 +710,11 @@
             <!-- Progress Section -->
             <div id="progress" class="section">
                 <h2 style="margin-bottom: 30px; color: #333;">dashboard</h2>
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn" id="exportDataBtn" style="padding: 8px 16px; font-size: 14px; background: #6c757d;">📥 Export Data</button>
+                    <button class="btn" id="importDataBtn" style="padding: 8px 16px; font-size: 14px; background: #6c757d;">📤 Import Data</button>
+                    <input type="file" id="importFileInput" accept=".json" style="display: none;">
+                </div>
                 <div style="margin-bottom: 20px;">
                     <label><strong>Filter by Date:</strong></label>
                     <input type="date" id="filterStart"> to <input type="date" id="filterEnd">
