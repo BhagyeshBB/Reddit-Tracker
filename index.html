@@ -908,7 +908,7 @@
         function renderFilteredTable(activities) {
             const container = document.getElementById('filteredTableContainer');
             if (!activities.length) {
-                container.innerHTML = '<em>No data for selected range.</em>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No activities found</p><small style="color: #999;">Try a different date range</small></div>';
                 return;
             }
             let html = '<div style="display:flex;justify-content:center;">';
