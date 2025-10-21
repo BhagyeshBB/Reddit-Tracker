@@ -990,7 +990,7 @@
                     activities[idx] = formData;
                     teamData[editMemberId].totalKarma = formData.totalKarma;
                 }
-                alert('Activity updated successfully!');
+                showToast('Activity updated successfully!', 'success', 3000);
                 editMode = false;
                 editMemberId = null;
                 editActivityId = null;
@@ -999,7 +999,7 @@
                 // Add new activity
                 teamData[formData.member].activities.push(formData);
                 teamData[formData.member].totalKarma = formData.totalKarma;
-                alert('Activity logged successfully!');
+                showToast('Activity logged successfully!', 'success', 3000);
             }
 
             localStorage.setItem('teamData', JSON.stringify(teamData));
