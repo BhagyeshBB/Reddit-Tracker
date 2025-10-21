@@ -17,19 +17,56 @@
             box-sizing: border-box;
         }
         
+        /* CSS Custom Properties for Theme Support */
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --container-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --nav-bg: #f8f9fa;
+            --nav-border: #e9ecef;
+            --input-border: #e9ecef;
+            --phase-card-bg: #f8f9fa;
+            --objective-bg: #ffffff;
+            --metric-bg: #f8f9fa;
+        }
+        
+        body[data-theme="dark"] {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --container-bg: #0f3460;
+            --card-bg: #1a1a2e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            --nav-bg: #0a1929;
+            --nav-border: rgba(255, 255, 255, 0.1);
+            --input-border: rgba(255, 255, 255, 0.2);
+            --phase-card-bg: #0f1c2e;
+            --objective-bg: #1a2332;
+            --metric-bg: #0f1c2e;
+        }
+        
         body {
             font-family: 'Inter', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            color: var(--text-primary);
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
+            background: var(--container-bg);
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             overflow: hidden;
         }
         
@@ -47,8 +84,8 @@
         
         .nav {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--nav-border);
         }
         
         .nav-btn {
@@ -62,13 +99,13 @@
         }
         
         .nav-btn.active {
-            background: white;
+            background: var(--card-bg);
             border-bottom: 3px solid #ff6b6b;
             color: #ff6b6b;
         }
         
         .nav-btn:hover {
-            background: #e9ecef;
+            background: var(--nav-border);
         }
         
         .content {
@@ -84,7 +121,7 @@
         }
         
         .phase-card {
-            background: #f8f9fa;
+            background: var(--phase-card-bg);
             border-radius: 10px;
             padding: 25px;
             margin-bottom: 20px;
@@ -112,14 +149,14 @@
         }
         
         .objective {
-            background: white;
+            background: var(--objective-bg);
             padding: 15px;
             border-radius: 8px;
             border-left: 3px solid #4ecdc4;
         }
         
         .tracker-form {
-            background: #f8f9fa;
+            background: var(--phase-card-bg);
             padding: 25px;
             border-radius: 10px;
             margin-bottom: 20px;
@@ -133,13 +170,13 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
         }
         
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 10px;
-            border: 2px solid #e9ecef;
+            border: 2px solid var(--input-border);
             border-radius: 5px;
             font-size: 16px;
             transition: border-color 0.3s ease;
@@ -167,11 +204,11 @@
         }
         
         .progress-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             border-left: 5px solid #4ecdc4;
         }
         
@@ -200,7 +237,7 @@
         .metric {
             text-align: center;
             padding: 15px;
-            background: #f8f9fa;
+            background: var(--metric-bg);
             border-radius: 8px;
         }
         
@@ -211,7 +248,7 @@
         }
         
         .metric-label {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 0.9rem;
         }
         
@@ -258,9 +295,9 @@
             position: relative;
             margin-bottom: 25px;
             padding: 20px;
-            background: white;
+            background: var(--card-bg);
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
         
         .timeline-item::before {
@@ -427,7 +464,7 @@
         
         /* Inline Team Member Form */
         .inline-member-form {
-            background: #f8f9fa;
+            background: var(--phase-card-bg);
             padding: 15px;
             border-radius: 8px;
             margin-top: 10px;
