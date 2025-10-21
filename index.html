@@ -832,39 +832,47 @@
     <script>
         // Chart.js and PivotTable.js integration
         function renderActivityChart(activities) {
-            const ctx = document.getElementById('activityChart').getContext('2d');
-            if (window.activityChartInstance) {
-                window.activityChartInstance.destroy();
-            }
-            // Aggregate by date
-            const dateMap = {};
-            activities.forEach(act => {
-                if (!dateMap[act.date]) dateMap[act.date] = { comments: 0, posts: 0, karma: 0 };
-                dateMap[act.date].comments += act.commentsMade;
-                dateMap[act.date].posts += act.postsCreated;
-                dateMap[act.date].karma += act.karmaGained;
-            });
-            const labels = Object.keys(dateMap).sort();
-            const commentsData = labels.map(d => dateMap[d].comments);
-            const postsData = labels.map(d => dateMap[d].posts);
-            const karmaData = labels.map(d => dateMap[d].karma);
-            window.activityChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [
-                            { label: 'Comments', data: commentsData, backgroundColor: '#667eea' },
-                            { label: 'Posts', data: postsData, backgroundColor: '#4ecdc4' },
-                            { label: 'Karma', data: karmaData, backgroundColor: '#ff6b6b' }
-                        ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { position: 'top' } },
-                        // Use grouped bars (not stacked) with clean axes
-                        scales: { x: { stacked: false }, y: { beginAtZero: true, stacked: false } }
+            const chartContainer = document.getElementById('activityChart').parentElement;
+            showLoading(chartContainer.id || 'activityChart');
+            
+            // Use setTimeout to allow loading indicator to render
+            setTimeout(() => {
+                const ctx = document.getElementById('activityChart').getContext('2d');
+                if (window.activityChartInstance) {
+                    window.activityChartInstance.destroy();
                 }
-            });
+                // Aggregate by date
+                const dateMap = {};
+                activities.forEach(act => {
+                    if (!dateMap[act.date]) dateMap[act.date] = { comments: 0, posts: 0, karma: 0 };
+                    dateMap[act.date].comments += act.commentsMade;
+                    dateMap[act.date].posts += act.postsCreated;
+                    dateMap[act.date].karma += act.karmaGained;
+                });
+                const labels = Object.keys(dateMap).sort();
+                const commentsData = labels.map(d => dateMap[d].comments);
+                const postsData = labels.map(d => dateMap[d].posts);
+                const karmaData = labels.map(d => dateMap[d].karma);
+                window.activityChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                                { label: 'Comments', data: commentsData, backgroundColor: '#667eea' },
+                                { label: 'Posts', data: postsData, backgroundColor: '#4ecdc4' },
+                                { label: 'Karma', data: karmaData, backgroundColor: '#ff6b6b' }
+                            ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'top' } },
+                            // Use grouped bars (not stacked) with clean axes
+                            scales: { x: { stacked: false }, y: { beginAtZero: true, stacked: false } }
+                    }
+                });
+                
+                hideLoading(chartContainer.id || 'activityChart');
+            }, 100);
         }
 
         function renderPivotTable(activities) {
