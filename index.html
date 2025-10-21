@@ -574,6 +574,21 @@
                                     <button type="button" class="btn" id="addMemberBtn" style="padding: 6px 12px; font-size: 14px;">➕ Add</button>
                                     <button type="button" class="btn" id="editMemberBtn" style="padding: 6px 12px; font-size: 14px;">✏️ Edit</button>
                                 </div>
+                                <!-- Inline Team Member Form -->
+                                <div id="inlineMemberForm" class="inline-member-form">
+                                    <div class="form-group" style="margin-bottom: 10px;">
+                                        <label>Member Name</label>
+                                        <input type="text" id="memberNameInput" placeholder="Enter name" style="width: 100%;">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 10px;">
+                                        <label>Starting Karma (optional)</label>
+                                        <input type="number" id="memberKarmaInput" placeholder="0" min="0" style="width: 100%;">
+                                    </div>
+                                    <div class="inline-form-buttons">
+                                        <button type="button" class="btn btn-small" id="saveMemberBtn" style="background: #4ecdc4;">💾 Save</button>
+                                        <button type="button" class="btn-secondary" id="cancelMemberBtn">✖ Cancel</button>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="form-group">
