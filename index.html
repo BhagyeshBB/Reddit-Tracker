@@ -989,12 +989,12 @@
             memberFormMode = mode;
             editingMemberId = memberId;
             
-            if (mode === 'edit' && memberId) {
-                nameInput.value = teamData[memberId].name;
-                karmaInput.value = teamData[memberId].totalKarma;
-            } else {
+            if (mode === 'add') {
                 nameInput.value = '';
                 karmaInput.value = '0';
+            } else if (mode === 'edit' && memberId) {
+                nameInput.value = teamData[memberId].name;
+                karmaInput.value = teamData[memberId].totalKarma;
             }
             
             form.classList.add('active');
@@ -1031,6 +1031,7 @@
                 
                 teamData[newId] = { name, activities: [], totalKarma: karma };
                 localStorage.setItem('teamData', JSON.stringify(teamData));
+                autoBackup();
                 updateTeamMemberDropdown();
                 document.getElementById('teamMember').value = newId;
                 updateProgressDisplay();
@@ -1039,6 +1040,7 @@
                 teamData[editingMemberId].name = name;
                 teamData[editingMemberId].totalKarma = karma;
                 localStorage.setItem('teamData', JSON.stringify(teamData));
+                autoBackup();
                 updateTeamMemberDropdown();
                 document.getElementById('teamMember').value = editingMemberId;
                 updateProgressDisplay();
