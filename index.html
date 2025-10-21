@@ -1575,6 +1575,36 @@
                 console.error('Auto-backup failed:', error);
             }
         }
+        
+        // Loading Indicator Functions
+        function showLoading(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            // Make container position relative if not already
+            const position = window.getComputedStyle(container).position;
+            if (position === 'static') {
+                container.style.position = 'relative';
+            }
+            
+            // Create loading overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.id = `${containerId}-loading`;
+            
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+            
+            overlay.appendChild(spinner);
+            container.appendChild(overlay);
+        }
+        
+        function hideLoading(containerId) {
+            const overlay = document.getElementById(`${containerId}-loading`);
+            if (overlay && overlay.parentElement) {
+                overlay.parentElement.removeChild(overlay);
+            }
+        }
     </script>
 </body>
 </html>
