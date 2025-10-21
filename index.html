@@ -877,16 +877,21 @@
 
         function renderPivotTable(activities) {
             const container = document.getElementById('pivotTableContainer');
+            showLoading('pivotTableContainer');
             container.innerHTML = '';
-            $(function(){
-                $(container).pivotUI(activities, {
-                    rows: ['member'],
-                    cols: ['date'],
-                    aggregatorName: 'Sum',
-                    vals: ['commentsMade', 'postsCreated', 'karmaGained'],
-                    rendererName: 'Table',
+            
+            setTimeout(() => {
+                $(function(){
+                    $(container).pivotUI(activities, {
+                        rows: ['member'],
+                        cols: ['date'],
+                        aggregatorName: 'Sum',
+                        vals: ['commentsMade', 'postsCreated', 'karmaGained'],
+                        rendererName: 'Table',
+                    });
+                    hideLoading('pivotTableContainer');
                 });
-            });
+            }, 100);
         }
         // Date filter and table logic
         function getFilteredActivities(startDate, endDate) {
