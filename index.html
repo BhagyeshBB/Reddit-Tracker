@@ -1148,14 +1148,15 @@
             }
 
             localStorage.setItem('teamData', JSON.stringify(teamData));
-        // Persist data on every change
-        window.addEventListener('beforeunload', function() {
-            localStorage.setItem('teamData', JSON.stringify(teamData));
-        });
+            // Persist data on every change
+            window.addEventListener('beforeunload', function() {
+                localStorage.setItem('teamData', JSON.stringify(teamData));
+            });
             this.reset();
             document.getElementById('activityDate').value = new Date().toISOString().split('T')[0];
             updateProgressDisplay();
             updateQualityMetrics();
+            autoBackup();
         });
         
         // Update progress display
