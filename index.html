@@ -1443,6 +1443,135 @@
                     });
             });
         }
+        
+        // Data Export Function
+        function exportTeamData() {
+            const dataToExport = {
+                version: "1.0",
+                exportDate: new Date().toISOString(),
+                data: teamData
+            };
+            
+            const jsonString = JSON.stringify(dataToExport, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const today = new Date().toISOString().split('T')[0];
+            const filename = `reddit-tracker-backup-${today}.json`;
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('Data exported successfully!', 'success', 3000);
+        }
+        
+        // Data Import Function
+        function importTeamData() {
+            const fileInput = document.getElementById('importFileInput');
+            fileInput.click();
+        }
+        
+        // Handle file input change
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('exportDataBtn').onclick = exportTeamData;
+            document.getElementById('importDataBtn').onclick = importTeamData;
+            
+            document.getElementById('importFileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        
+                        // Validate structure
+                        if (!importedData.version || !importedData.exportDate || !importedData.data) {
+                            showToast('Invalid backup file format', 'error', 4000);
+                            return;
+                        }
+                        
+                        // Validate data structure
+                        if (typeof importedData.data !== 'object') {
+                            showToast('Invalid backup file format', 'error', 4000);
+                            return;
+                        }
+                        
+                        // Ask user: replace or merge
+                        const shouldReplace = confirm('Replace existing data? OK = Replace, Cancel = Merge');
+                        
+                        if (shouldReplace) {
+                            teamData = importedData.data;
+                        } else {
+                            // Merge data
+                            Object.keys(importedData.data).forEach(memberId => {
+                                if (teamData[memberId]) {
+                                    // Merge activities
+                                    const existingActivities = teamData[memberId].activities;
+                                    const newActivities = importedData.data[memberId].activities;
+                                    teamData[memberId].activities = [...existingActivities, ...newActivities];
+                                    // Use higher karma value
+                                    teamData[memberId].totalKarma = Math.max(
+                                        teamData[memberId].totalKarma,
+                                        importedData.data[memberId].totalKarma
+                                    );
+                                } else {
+                                    teamData[memberId] = importedData.data[memberId];
+                                }
+                            });
+                        }
+                        
+                        // Save to localStorage
+                        localStorage.setItem('teamData', JSON.stringify(teamData));
+                        
+                        // Refresh displays
+                        updateTeamMemberDropdown();
+                        updateProgressDisplay();
+                        updateQualityMetrics();
+                        applyDateFilter();
+                        
+                        showToast('Data imported successfully!', 'success', 3000);
+                        
+                    } catch (error) {
+                        console.error('Import error:', error);
+                        showToast('Invalid backup file format', 'error', 4000);
+                    }
+                    
+                    // Reset file input
+                    e.target.value = '';
+                };
+                
+                reader.readAsText(file);
+            });
+        });
+        
+        // Auto-backup Function
+        function autoBackup() {
+            try {
+                const currentData = JSON.stringify(teamData);
+                
+                // Rotate backups: backup_3 ← backup_2 ← backup_1 ← current
+                const backup2 = localStorage.getItem('teamData_backup_1');
+                const backup3 = localStorage.getItem('teamData_backup_2');
+                
+                if (backup2) {
+                    localStorage.setItem('teamData_backup_2', backup2);
+                }
+                if (backup3) {
+                    localStorage.setItem('teamData_backup_3', backup3);
+                }
+                
+                // Save current as backup_1
+                localStorage.setItem('teamData_backup_1', currentData);
+            } catch (error) {
+                console.error('Auto-backup failed:', error);
+            }
+        }
     </script>
 </body>
 </html>
