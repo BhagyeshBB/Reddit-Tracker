@@ -1387,6 +1387,33 @@
         
         // Initialize toast container on page load
         createToastContainer();
+        
+        // Dark Mode Functions
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme_preference') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            updateThemeToggleIcon(savedTheme);
+        }
+        
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme_preference', newTheme);
+            updateThemeToggleIcon(newTheme);
+            
+            const message = newTheme === 'dark' ? 'Dark mode enabled' : 'Light mode enabled';
+            showToast(message, 'info', 3000);
+        }
+        
+        function updateThemeToggleIcon(theme) {
+            const toggleBtn = document.getElementById('theme-toggle');
+            toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        // Load theme on page initialization
+        loadTheme();
     </script>
 </body>
 </html>
