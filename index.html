@@ -1193,6 +1193,60 @@
         document.getElementById('activityDate').value = new Date().toISOString().split('T')[0];
         // Initialize progress display
         updateProgressDisplay();
+        
+        // Toast Notification System
+        function createToastContainer() {
+            if (!document.querySelector('.toast-container')) {
+                const container = document.createElement('div');
+                container.className = 'toast-container';
+                container.setAttribute('role', 'alert');
+                container.setAttribute('aria-live', 'polite');
+                document.body.appendChild(container);
+            }
+        }
+        
+        function showToast(message, type = 'info', duration = 3000) {
+            createToastContainer();
+            const container = document.querySelector('.toast-container');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.setAttribute('aria-atomic', 'true');
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'toast-close';
+            closeBtn.innerHTML = '×';
+            closeBtn.setAttribute('aria-label', 'Close notification');
+            closeBtn.onclick = () => removeToast(toast);
+            
+            toast.appendChild(messageSpan);
+            toast.appendChild(closeBtn);
+            toast.onclick = () => removeToast(toast);
+            
+            container.appendChild(toast);
+            
+            // Auto-dismiss after duration
+            setTimeout(() => removeToast(toast), duration);
+            
+            return toast;
+        }
+        
+        function removeToast(toastElement) {
+            if (toastElement && toastElement.parentElement) {
+                toastElement.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    if (toastElement.parentElement) {
+                        toastElement.parentElement.removeChild(toastElement);
+                    }
+                }, 300);
+            }
+        }
+        
+        // Initialize toast container on page load
+        createToastContainer();
     </script>
 </body>
 </html>
